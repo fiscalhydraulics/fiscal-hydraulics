@@ -1,0 +1,155 @@
+<!-- Fiscal Hydraulics Interactive Diagram — paste into a Squarespace Code Block -->
+<style>
+  #fh-wrap {
+    max-width: 1400px;
+    margin: 0 auto;
+    position: relative;
+    line-height: 0; /* removes gap below inline SVG */
+  }
+  #fh-wrap svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  #fh-tip {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    max-width: 300px;
+    background: #ffffff;
+    color: #1a1a1a;
+    font-family: sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    padding: 12px 16px;
+    border-radius: 6px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    border: 1px solid #e0e0e0;
+    pointer-events: none; /* clicks pass through so "click away" still works */
+  }
+</style>
+
+<div id="fh-wrap"></div>
+<div id="fh-tip"></div>
+
+<script>
+(function () {
+  var SVG_URL = 'https://raw.githubusercontent.com/fiscalhydraulics/fiscal-hydraulics/main/fh-system-map-horizontal.svg';
+  var CSV_URL = 'https://raw.githubusercontent.com/fiscalhydraulics/fiscal-hydraulics/main/fh-components.csv';
+
+  var wrap = document.getElementById('fh-wrap');
+  var tip  = document.getElementById('fh-tip');
+
+  /* ── CSV parser: handles quoted fields that may contain commas ── */
+  function parseCSV(text) {
+    var map = {};
+    var lines = text.replace(/\r/g, '').split('\n');
+    for (var i = 1; i < lines.length; i++) {        // skip header row
+      var line = lines[i].trim();
+      if (!line) continue;
+
+      var id, tooltip;
+      if (line.charAt(0) === '"') {
+        // id is quoted
+        var close = line.indexOf('"', 1);
+        id = line.slice(1, close);
+        tooltip = line.slice(close + 2); // skip closing quote + comma
+      } else {
+        var comma = line.indexOf(',');
+        if (comma === -1) continue;
+        id = line.slice(0, comma).trim();
+        tooltip = line.slice(comma + 1).trim();
+      }
+
+      // Strip surrounding quotes from tooltip value if present
+      if (tooltip.charAt(0) === '"' && tooltip.charAt(tooltip.length - 1) === '"') {
+        tooltip = tooltip.slice(1, -1);
+      }
+      // Unescape doubled quotes inside CSV quoted fields
+      tooltip = tooltip.replace(/""/g, '"');
+
+      if (id) map[id] = tooltip;
+    }
+    return map;
+  }
+
+  /* ── Position tooltip near cursor, kept within viewport ── */
+  function positionTip(e) {
+    var margin = 14;
+    // Show off-screen first to measure dimensions
+    tip.style.left = '-9999px';
+    tip.style.top  = '-9999px';
+    tip.style.display = 'block';
+
+    var tw = tip.offsetWidth;
+    var th = tip.offsetHeight;
+    var vw = window.innerWidth;
+    var vh = window.innerHeight;
+
+    var x = e.clientX + margin;
+    var y = e.clientY + margin;
+
+    if (x + tw > vw - margin) x = e.clientX - tw - margin;
+    if (y + th > vh - margin) y = e.clientY - th - margin;
+    if (x < margin) x = margin;
+    if (y < margin) y = margin;
+
+    tip.style.left = x + 'px';
+    tip.style.top  = y + 'px';
+  }
+
+  /* ── Fetch both resources in parallel, then wire everything up ── */
+  function fetchText(url) {
+    return fetch(url).then(function (r) {
+      if (!r.ok) throw new Error('Failed to fetch ' + url + ' (' + r.status + ')');
+      return r.text();
+    });
+  }
+
+  Promise.all([fetchText(SVG_URL), fetchText(CSV_URL)])
+    .then(function (results) {
+      var svgText = results[0];
+      var csvText = results[1];
+
+      // Inject SVG inline
+      wrap.innerHTML = svgText;
+      var svg = wrap.querySelector('svg');
+      if (svg) {
+        svg.removeAttribute('width');
+        svg.removeAttribute('height');
+        svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+      }
+
+      // Parse tooltips
+      var tooltips = parseCSV(csvText);
+
+      // Attach click handlers to each matching group
+      Object.keys(tooltips).forEach(function (id) {
+        // CSS.escape is available in all modern browsers; fall back to manual escaping
+        var selector = '#' + (typeof CSS !== 'undefined' && CSS.escape ? CSS.escape(id) : id.replace(/([^\w-])/g, '\\$1'));
+        var el = wrap.querySelector(selector);
+        if (!el) return;
+
+        el.style.cursor = 'pointer';
+        el.addEventListener('click', function (e) {
+          e.stopPropagation();
+          tip.textContent = tooltips[id];
+          positionTip(e);
+        });
+      });
+    })
+    .catch(function (err) {
+      console.error('[FH diagram]', err);
+    });
+
+  /* ── Dismiss tooltip on click away or scroll ── */
+  document.addEventListener('click', function () {
+    tip.style.display = 'none';
+  });
+
+  // Hide on any scroll so tip doesn't drift from its element
+  document.addEventListener('scroll', function () {
+    tip.style.display = 'none';
+  }, true);
+})();
+</script>

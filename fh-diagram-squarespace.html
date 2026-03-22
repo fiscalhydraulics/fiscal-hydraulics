@@ -123,19 +123,28 @@
       // Parse tooltips
       var tooltips = parseCSV(csvText);
 
-      // Attach click handlers to each matching group
-      Object.keys(tooltips).forEach(function (id) {
-        // CSS.escape is available in all modern browsers; fall back to manual escaping
-        var selector = '#' + (typeof CSS !== 'undefined' && CSS.escape ? CSS.escape(id) : id.replace(/([^\w-])/g, '\\$1'));
-        var el = wrap.querySelector(selector);
-        if (!el) return;
-
+      // Attach click handlers to each matching group.
+      // The SVG uses a _2 suffix for the main-diagram copy of elements that
+      // also appear in the legend (e.g. fh-valve-emergency-budget lives inside
+      // the legend group; fh-valve-emergency-budget_2 is the real diagram
+      // element). Wire up both so either is clickable.
+      function wireElement(el, id) {
         el.style.cursor = 'pointer';
         el.addEventListener('click', function (e) {
           e.stopPropagation();
           tip.textContent = tooltips[id];
           positionTip(e);
         });
+      }
+
+      Object.keys(tooltips).forEach(function (id) {
+        var esc = typeof CSS !== 'undefined' && CSS.escape ? CSS.escape : function (s) { return s.replace(/([^\w-])/g, '\\$1'); };
+        // Primary element (exact CSV id)
+        var el = wrap.querySelector('#' + esc(id));
+        if (el) wireElement(el, id);
+        // _2 duplicate — the main-diagram copy when the bare id is in the legend
+        var el2 = wrap.querySelector('#' + esc(id + '_2'));
+        if (el2) wireElement(el2, id);
       });
     })
     .catch(function (err) {

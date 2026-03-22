@@ -1,0 +1,30 @@
+ID,Short Description (Tooltip)
+fh-reservoir-fiscal,The government's core fiscal capacity to absorb shocks without compromising routine spending.
+fh-reserve-contingency,"A domestically allocated government contingency reserve, distinct from the PAF reserve, held for routine fiscal volatility management."
+fh-reserve-paf,Pre-arranged finance held ready for rapid release when a shock trigger is met.
+fh-flow-revenue,The primary stream of government income entering the fiscal system.
+fh-flow-routine,The standard budget execution pipeline from approval through to community-level service delivery.
+fh-flow-emergency,Finance released through pre-arranged mechanisms when a shock trigger is activated.
+fh-flow-emergency-uncertain,"Emergency finance flows that exist but whose activation, timing, and routing are not pre-defined."
+fh-flow-climate,"Long-term climate investment flows entering the fiscal system, vulnerable to displacement by crisis spending."
+fh-gate-approve,Legislative or executive approval required before funds can be released into the routine expenditure pipeline.
+fh-gate-release,Treasury release of appropriated funds to spending units — the control gate.
+fh-gate-commit,Formal commitment of released funds to a specific expenditure — the compliance gate.
+fh-gate-disburse,"Actual payment to supplier, service provider, or beneficiary — the oversight gate."
+fh-valve-contingency,"A two-way valve governing the allocation of funds from the fiscal reservoir into the domestic contingency reserve, and their return when needed."
+fh-valve-trigger-paf,An automatic or semi-automatic valve that opens when a pre-defined shock threshold is reached.
+fh-valve-emergency-budget,External emergency budget support flowing into the fiscal reservoir from international sources.
+fh-valve-emergency-commit,The gate governing commitment of emergency finance to specific response activities.
+fh-node-sovereign-response,The point where activated emergency finance splits between on-budget sovereign channels and off-budget flows routed outside government systems.
+fh-node-outflow-emergency,"The point where emergency finance reaches its end destinations — relief, early recovery, and SRSP."
+fh-node-outflow-routine,"The terminal point of the routine budget pipeline delivering core services, capital spend, and administration."
+fh-node-communities,The ultimate recipient of both routine and emergency fiscal flows — where system performance is tested.
+fh-source-climate,External climate finance entering the fiscal system from international climate funds and MDBs.
+fh-source-grants,Non-repayable external grants entering the fiscal reservoir.
+fh-source-borrowing,Sovereign borrowing entering the fiscal reservoir — with the debt-reduces-capacity feedback.
+fh-source-ebs,Post-shock budget support from MDBs and bilaterals that enters the fiscal system during crisis.
+fh-source-paf,"Pre-arranged financing instruments that feed the PAF reserve — parametric insurance, CAT bonds, contingency credit."
+fh-source-humanitarian,"Standard humanitarian aid flowing off-budget through UN agencies, NGOs, and the Red Cross — appeal-based, outside sovereign systems, and not pre-arranged."
+fh-label-debt-capacity,Accumulated debt reduces the effective shock absorption capacity of the fiscal reservoir.
+fh-label-revenue-loss,"Crisis events reduce government revenue collection, creating a feedback that further depletes the fiscal reservoir."
+fh-gap-subnational,Most disaster response is implemented locally but most emergency finance is held at sovereign level — exposing communities during the critical relief phase.

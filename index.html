@@ -667,7 +667,7 @@ var VINTAGE = 'Last reviewed 10 Apr 2026';
   af.delete(388);
   gcf.delete(426);
 
-  // Provisional: membership identified but current access not confirmed within 18 months
+  // Provisional: membership identified but current no recent evidence of active coverage
   var provisional = new Set([454,508,426,706,716,504]);
 
   // Instrument detail strings shown in tooltips
@@ -796,7 +796,7 @@ var VINTAGE = 'Last reviewed 10 Apr 2026';
       var lines = instruments.map(function(m){ return m.label + stag(m.speed, m.cls); });
       if (instrumentDetail[id]) lines.push(instrumentDetail[id]);
       if (activeNoInstrument.has(id)) lines.push('Active event — no instrument identified');
-      if (provisional.has(id)) lines.push('<span class="tt-muted">Access not confirmed within 18 months</span>');
+      if (provisional.has(id)) lines.push('<span class="tt-muted">No recent evidence of active coverage</span>');
       lines.push('<span class="tt-muted">'+VINTAGE+'</span>');
       return lines;
     }

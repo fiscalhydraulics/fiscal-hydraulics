@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fiscal Hydraulics Monitor</title>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --teal:       #3d8c86;
+    --teal-light: #2a6b66;
+    --teal-dim:   rgba(61,140,134,0.12);
+    --border:     rgba(0,0,0,0.1);
+    --text:       #1a2a3a;
+    --text-dim:   #5a7080;
+    --text-muted: #8a9faa;
+  }
+
+  html, body {
+    height: 100%;
+    background: #FAFAFA;
+    color: var(--text);
+    font-family: 'Newsreader', Georgia, serif;
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .tracker {
+    display: grid;
+    grid-template-rows: 64px 1fr;
+    grid-template-columns: 1fr 388px;
+    height: 100vh;
+    min-height: 600px;
+    border: 1px solid rgba(0,0,0,0.12);
+    border-radius: 4px;
+    overflow: hidden;
+    background: #FAFAFA;
+  }
+
+  .t-header {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    background: #FAFAFA;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    z-index: 10;
+  }
+
+  .t-header-left { display: flex; align-items: center; gap: 20px; }
+
+  .t-logo {
+    font-family: 'Newsreader', Georgia, serif;
+    font-size: 16px;
+    font-weight: 500;
+    color: #1a2a3a;
+    letter-spacing: 0.06em;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .t-updated-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 3px;
+  }
+
+  .t-header-right {
+    display: flex;
+    align-items: flex-end;
+    gap: 20px;
+    padding-bottom: 20px;
+  }
+
+  .t-pulse {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .t-pulse-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--teal);
+    animation: pulse 2s ease-in-out infinite;
+    flex-shrink: 0;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%       { opacity: 0.4; transform: scale(0.8); }
+  }
+
+  .t-beta {
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(90,112,128,0.6);
+    align-self: flex-start;
+    margin-top: 4px;
+  }
+
+  .t-map {
+    position: relative;
+    overflow: hidden;
+    background: #FAFAFA;
+  }
+
+  .t-map-svg { width: 100%; height: 100%; display: block; }
+
+  .t-map-controls {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    width: 100%;
+    z-index: 6;
+    background: #FAFAFA;
+    display: flex;
+    flex-direction: column;
+    padding: 0 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .t-mode-toggle {
+    display: flex;
+    gap: 4px;
+    padding: 8px 0 4px 0;
+  }
+
+  .t-mode-btn {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 4px 8px;
+    border-radius: 3px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+  }
+
+  .t-mode-btn.active { background: var(--teal-dim); color: var(--teal-light); border-color: var(--teal); }
+  .t-mode-btn:hover:not(.active) { color: var(--text); }
+
+  .t-region-tabs {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 4px;
+    padding: 4px 0 8px 0;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .t-region-tab {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 4px 8px;
+    border-radius: 3px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .t-region-tab:hover  { border-color: var(--teal); color: var(--teal-light); }
+  .t-region-tab.active { background: var(--teal-dim); border-color: var(--teal); color: var(--teal-light); }
+
+  .t-sidebar {
+    border-left: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background: #F4F5F7;
+  }
+
+  .t-sidebar::-webkit-scrollbar { width: 4px; }
+  .t-sidebar::-webkit-scrollbar-track { background: transparent; }
+  .t-sidebar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 2px; }
+
+  .t-sidebar-section { border-bottom: 1px solid var(--border); flex-shrink: 0; }
+  .t-sidebar-section:last-child { border-bottom: none; }
+
+  .t-section-header {
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .t-section-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+
+  .t-coverage { padding: 0 16px 10px; display: flex; flex-direction: column; gap: 6px; }
+  .t-coverage-row { display: flex; align-items: center; gap: 10px; }
+
+  .t-cov-label {
+    font-size: 12px;
+    color: var(--text-dim);
+    width: 60px;
+    flex-shrink: 0;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.04em;
+  }
+
+  .t-cov-bar-wrap {
+    flex: 1;
+    height: 4px;
+    background: rgba(0,0,0,0.08);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .t-cov-bar { height: 100%; border-radius: 2px; transition: width 0.5s ease; }
+
+  .t-cov-count {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text);
+    width: 28px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  .t-cov-note {
+    padding: 0 16px 10px;
+    font-size: 11px;
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.02em;
+    font-style: italic;
+  }
+
+  .t-legend,
+  .t-sidebar-copy {
+    padding: 0 16px 12px;
+  }
+
+  .t-legend {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .t-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+
+  .t-legend-dot { width: 20px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+
+  .t-sidebar-copy {
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.65;
+  }
+
+  .t-sidebar-copy strong { color: var(--text); font-weight: 500; }
+  .t-sidebar-copy > div + div { margin-top: 7px; }
+
+  .country {
+    fill: #c8d4dc;
+    stroke: #FAFAFA;
+    stroke-width: 0.5;
+    transition: fill 0.2s ease;
+  }
+
+  .country.has-ccrif   { fill: #3d9e94; }
+  .country.has-arc     { fill: #7a9e4a; }
+  .country.has-pcric   { fill: #8a6abf; }
+  .country.has-catbond { fill: #4a8aaa; }
+  .country.has-seadrif { fill: #e8a030; }
+  .country.has-catddo  { fill: #7a6abf; }
+  .country.active-event { fill: #bf3a3a; }
+  .country.has-depth { stroke: rgba(20,20,20,0.65); stroke-width: 1.5; }
+
+  .country.cf-gcf           { fill: #3a7ebf; }
+  .country.cf-af            { fill: #5aaa7a; }
+  .country.cf-gef           { fill: #9a6abf; }
+  .country.cf-multi-gcf-af  { fill: url(#hatch-gcf-af); }
+  .country.cf-multi-gcf-gef { fill: url(#hatch-gcf-gef); }
+  .country.cf-multi-af-gef  { fill: url(#hatch-af-gef); }
+  .country.cf-multi-all     { fill: url(#hatch-all); }
+
+  .country.gap-both        { fill: #3d9e94; }
+  .country.gap-cf-only     { fill: #C8923A; }
+  .country.gap-crisis-only { fill: #4a8aaa; }
+
+  .country:hover { opacity: 0.75; cursor: default; }
+
+  #map-tooltip {
+    position: fixed;
+    pointer-events: none;
+    opacity: 0;
+    background: #FFFFFF;
+    border: 1px solid rgba(0,0,0,0.12);
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-size: 12px;
+    color: #1a2a3a;
+    z-index: 100;
+    transition: opacity 0.15s ease;
+    max-width: 280px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+
+  #map-tooltip .tt-country {
+    font-weight: 500;
+    color: #0d1a26;
+    margin-bottom: 5px;
+    font-size: 12px;
+  }
+
+  #map-tooltip .tt-instruments {
+    font-size: 11px;
+    color: #5a7080;
+    line-height: 1.55;
+  }
+
+  #map-tooltip .tt-instruments > div + div { margin-top: 2px; }
+
+  .tt-speed {
+    display: inline-block;
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 1px 5px;
+    border-radius: 2px;
+    margin-left: 5px;
+    vertical-align: middle;
+  }
+
+  .tt-speed-fast       { background: rgba(61,158,148,0.12); color: #2a6b66; }
+  .tt-speed-contingent { background: rgba(122,106,191,0.12); color: #5a4aaa; }
+  .tt-speed-slow       { background: rgba(58,126,191,0.12);  color: #2a5a9a; }
+
+  .tt-muted {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    color: #9aafba;
+    letter-spacing: 0.06em;
+    margin-top: 4px;
+    display: block;
+  }
+
+  .t-feedback {
+    padding: 10px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.06em;
+    border-top: 1px solid var(--border);
+    background: #FAFAFA;
+  }
+
+  .t-feedback a {
+    color: var(--text-dim);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(0,0,0,0.15);
+    transition: color 0.15s ease, border-color 0.15s ease;
+  }
+
+  .t-feedback a:hover { color: var(--teal); border-color: var(--teal); }
+
+  @media (max-width: 1000px) {
+    .tracker {
+      grid-template-columns: 1fr;
+      grid-template-rows: 52px 52vw auto;
+      min-height: auto;
+      height: auto;
+    }
+    .t-map { height: 52vw; min-height: 320px; max-height: 460px; }
+    .t-sidebar { border-left: none; border-top: 1px solid var(--border); overflow-y: visible; }
+  }
+
+  @media (max-width: 800px) {
+    .tracker { grid-template-rows: 52px 54vw auto; }
+    .t-map { height: 54vw; min-height: 290px; max-height: 420px; }
+    .t-map-controls { padding: 0 8px; }
+    .t-mode-btn { font-size: 9px; padding: 3px 7px; }
+    .t-region-tab { font-size: 10px; padding: 4px 6px; letter-spacing: 0.05em; }
+  }
+
+  @media (max-width: 500px) {
+    .tracker { grid-template-rows: 52px 58vw auto; }
+    .t-map { height: 58vw; min-height: 240px; max-height: 360px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="tracker">
+
+  <header class="t-header">
+    <div class="t-header-left">
+      <div>
+        <a href="https://www.fiscalhydraulics.com" class="t-logo">Fiscal Hydraulics <span style="color:var(--teal);font-weight:400;">Monitor</span></a>
+        <div class="t-updated-row">
+          <div class="t-pulse-dot"></div>
+          <span class="t-pulse">Updated 29 Mar 2026</span>
+        </div>
+      </div>
+    </div>
+    <div class="t-header-right">
+      <div class="t-beta">Beta</div>
+    </div>
+  </header>
+
+  <div class="t-map">
+    <div class="t-map-controls">
+      <div class="t-mode-toggle">
+        <button class="t-mode-btn active" data-mode="crisis">Crisis Finance</button>
+        <button class="t-mode-btn" data-mode="climate">Climate Finance</button>
+        <button class="t-mode-btn" data-mode="gap">Gap Analysis</button>
+      </div>
+      <div class="t-region-tabs">
+        <button class="t-region-tab" data-region="africa">Africa</button>
+        <button class="t-region-tab" data-region="caribbean">Caribbean &amp; C. America</button>
+        <button class="t-region-tab" data-region="southamerica">South America</button>
+        <button class="t-region-tab" data-region="pacific">Asia Pacific</button>
+        <button class="t-region-tab" data-region="global">Global</button>
+      </div>
+    </div>
+    <svg id="world-map" class="t-map-svg" xmlns="http://www.w3.org/2000/svg"></svg>
+  </div>
+
+  <aside class="t-sidebar">
+
+    <div class="t-sidebar-section">
+      <div class="t-section-header">
+        <div class="t-section-label">Financing Fast and Slow</div>
+      </div>
+      <div class="t-sidebar-copy">
+        <div>Climate finance is slower-moving — it funds adaptation and resilience over time. Crisis finance is automatic — pre-agreed triggers that disburse in days without requiring new political decisions.</div>
+        <div>This monitor maps both layers and the integration between them.</div>
+      </div>
+    </div>
+
+    <div id="sidebar-crisis">
+
+      <div class="t-sidebar-section">
+        <div class="t-section-header">
+          <div class="t-section-label">Countries by instrument</div>
+        </div>
+        <div class="t-coverage">
+          <div class="t-coverage-row"><div class="t-cov-label">CCRIF</div><div class="t-cov-bar-wrap"><div id="bar-ccrif" class="t-cov-bar" style="background:#3d9e94"></div></div><div id="count-ccrif" class="t-cov-count">—</div></div>
+          <div class="t-coverage-row"><div class="t-cov-label">ARC</div><div class="t-cov-bar-wrap"><div id="bar-arc" class="t-cov-bar" style="background:#7a9e4a"></div></div><div id="count-arc" class="t-cov-count">—</div></div>
+          <div class="t-coverage-row"><div class="t-cov-label">PCRIC</div><div class="t-cov-bar-wrap"><div id="bar-pcric" class="t-cov-bar" style="background:#8a6abf"></div></div><div id="count-pcric" class="t-cov-count">—</div></div>
+          <div class="t-coverage-row"><div class="t-cov-label">Cat Bond</div><div class="t-cov-bar-wrap"><div id="bar-catbond" class="t-cov-bar" style="background:#4a8aaa"></div></div><div id="count-catbond" class="t-cov-count">—</div></div>
+          <div class="t-coverage-row"><div class="t-cov-label">Cat DDO</div><div class="t-cov-bar-wrap"><div id="bar-catddo" class="t-cov-bar" style="background:#7a6abf"></div></div><div id="count-catddo" class="t-cov-count">—</div></div>
+          <div class="t-coverage-row"><div class="t-cov-label">SEADRIF</div><div class="t-cov-bar-wrap"><div id="bar-seadrif" class="t-cov-bar" style="background:#e8a030"></div></div><div id="count-seadrif" class="t-cov-count">—</div></div>
+        </div>
+        <div class="t-cov-note">Bars scaled relative to largest count.</div>
+      </div>
+
+      <div class="t-sidebar-section">
+        <div class="t-section-header"><div class="t-section-label">Legend</div></div>
+        <div class="t-legend">
+          <div class="t-legend-item"><div class="t-legend-dot" style="background:#3d9e94"></div>CCRIF participant country</div>
+          <div class="t-legend-item"><div class="t-legend-dot" style="background:#7a9e4a"></div>ARC — current coverage identified</div>
+          <div class="t-legend-item"><div class="t-legend-dot" style="background:#8a6abf"></div>PCRIC — current coverage identified</div>
+          <div class="t-legend-item"><div class="t-legend-dot" style="background:#4a8aaa"></div>Catastrophe bond in force</div>
+          <div class="t-legend-item"><div class="t-legend-dot" style="background:#7a6abf"></div>World Bank Cat DDO</div>
+          <div class="t-legend-item"><div class="t-legend-dot" style="background:#e8a030"></div>SEADRIF active policy</div>
+          <div class="t-legend-item"><div class="t-legend-dot" style="background:transparent;border:1.5px solid rgba(20,20,20,0.65);"></div>+ Cat DDO depth (outlined border)</div>
+          <div class="t-legend-item"><div class="t-legend-dot" style="background:#c8d4dc"></div>No instrument identified</div>
+        </div>
+      </div>
+
+      <div class="t-sidebar-section">
+        <div class="t-section-header"><div class="t-section-label">Acronyms</div></div>
+        <div class="t-sidebar-copy">
+          <div><strong>CCRIF</strong> — Caribbean Catastrophe Risk Insurance Facility</div>
+          <div><strong>ARC</strong> — African Risk Capacity</div>
+          <div><strong>PCRIC</strong> — Pacific Catastrophe Risk Insurance Company</div>
+          <div><strong>Cat DDO</strong> — Catastrophe Deferred Drawdown Option</div>
+          <div><strong>SEADRIF</strong> — Southeast Asia Disaster Risk Insurance Facility</div>
+        </div>
+      </div>
+
+      <div class="t-sidebar-section">
+        <div class="t-section-header"><div class="t-section-label">Notes</div></div>
+        <div class="t-sidebar-copy">
+          <div>Shows publicly verifiable current access to selected pre-arranged crisis finance instruments.</div>
+          <div>Membership alone is not treated as coverage: ARC and PCRIC are shown only where current policy-year or current-access evidence is identified.</div>
+          <div>Instruments differ in speed. Parametric cover disburses on trigger. Cat DDOs require a disaster declaration and government request.</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div id="sidebar-climate" style="display:none">
+
+      <div class="t-sidebar-section">
+        <div class="t-section-header"><div class="t-section-label">Countries by facility</div></div>
+        <div class="t-coverage">
+          <div class="t-coverage-row"><div class="t-cov-label">GCF</div><div class="t-cov-bar-wrap"><div id="bar-gcf" class="t-cov-bar" style="background:#3a7ebf"></div></div><div id="count-gcf" class="t-cov-count">—</div></div>
+          <div class="t-coverage-row"><div class="t-cov-label">AF</div><div class="t-cov-bar-wrap"><div id="bar-af" class="t-cov-bar" style="background:#5aaa7a"></div></div><div id="count-af" class="t-cov-count">—</div></div>
+          <div class="t-coverage-row"><div class="t-cov-label">GEF</div><div class="t-cov-bar-wrap"><div id="bar-gef" class="t-cov-bar" style="background:#9a6abf"></div></div><div id="count-gef" class="t-cov-count">—</div></div>
+        </div>
+        <div class="t-cov-note">Bars scaled relative to largest count.</div>
+      </div>
+
+      <div class="t-sidebar-section">
+        <div class="t-section-header"><div class="t-section-label">Legend</div></div>
+        <div class="t-legend">
+          <div class="t-legend-item"><div class="t-legend-dot" style="background:#3a7ebf"></div>GCF active or approved support</div>
+          <div class="t-legend-item"><div class="t-legend-dot" style="background:#5aaa7a"></div>Adaptation Fund active or approved</div>
+          <div class="t-legend-item"><div class="t-legend-dot" style="background:#9a6abf"></div>GEF active or approved support</div>
+          <div class="t-legend-item"><div class="t-legend-dot" style="background:repeating-linear-gradient(135deg,#3a7ebf 0px,#3a7ebf 3px,#5aaa7a 3px,#5aaa7a 6px);"></div>GCF + Adaptation Fund</div>
+          <div class="t-legend-item"><div class="t-legend-dot" style="background:repeating-linear-gradient(135deg,#3a7ebf 0px,#3a7ebf 3px,#9a6abf 3px,#9a6abf 6px);"></div>GCF + GEF</div>
+          <div class="t-legend-item"><div class="t-legend-dot" style="background:repeating-linear-gradient(135deg,#5aaa7a 0px,#5aaa7a 3px,#9a6abf 3px,#9a6abf 6px);"></div>Adaptation Fund + GEF</div>
+          <div class="t-legend-item"><div class="t-legend-dot" style="background:linear-gradient(45deg,transparent 42%,#5aaa7a 42%,#5aaa7a 58%,transparent 58%),linear-gradient(-45deg,transparent 42%,#9a6abf 42%,#9a6abf 58%,transparent 58%),#3a7ebf;"></div>All three facilities</div>
+          <div class="t-legend-item"><div class="t-legend-dot" style="background:#c8d4dc"></div>No facility identified</div>
+        </div>
+      </div>
+
+      <div class="t-sidebar-section">
+        <div class="t-section-header"><div class="t-section-label">Acronyms</div></div>
+        <div class="t-sidebar-copy">
+          <div><strong>GCF</strong> — Green Climate Fund</div>
+          <div><strong>AF</strong> — Adaptation Fund</div>
+          <div><strong>GEF</strong> — Global Environment Facility</div>
+        </div>
+      </div>
+
+      <div class="t-sidebar-section">
+        <div class="t-section-header"><div class="t-section-label">Notes</div></div>
+        <div class="t-sidebar-copy">
+          <div>Shows selected major multilateral climate funds with the clearest public country-level project data.</div>
+          <div>Not exhaustive of all climate finance channels. Does not track real-time disbursement or project implementation currency.</div>
+          <div>Some country classifications remain under review where public records are fragmented, regional, or proposal-stage.</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div id="sidebar-gap" style="display:none">
+
+      <div class="t-sidebar-section">
+        <div class="t-section-header"><div class="t-section-label">The Fast and Slow Finance Gap</div></div>
+        <div class="t-sidebar-copy">
+          <div>Countries receiving climate finance but without a pre-arranged crisis instrument lack a fast disbursing mechanism when a shock hits. Countries with a crisis instrument but no climate finance lack external support committed to long-term adaptation that reduces exposure over time.</div>
+          <div>In Fiscal Hydraulics terms, pre-arranged crisis instruments are designed to improve <strong>Transit</strong> — but trigger and disbursement do not by themselves guarantee that funding flows quickly, fully, or as intended.</div>
+        </div>
+      </div>
+
+      <div class="t-sidebar-section">
+        <div class="t-section-header"><div class="t-section-label">Legend</div></div>
+        <div class="t-legend">
+          <div class="t-legend-item"><div class="t-legend-dot" style="background:#3d9e94"></div>Climate finance + crisis instrument</div>
+          <div class="t-legend-item"><div class="t-legend-dot" style="background:#C8923A"></div>Climate finance — no crisis instrument</div>
+          <div class="t-legend-item"><div class="t-legend-dot" style="background:#4a8aaa"></div>Crisis instrument — no climate finance</div>
+          <div class="t-legend-item"><div class="t-legend-dot" style="background:#c8d4dc;border:1px solid rgba(0,0,0,0.1);"></div>Neither identified</div>
+        </div>
+      </div>
+
+      <div class="t-sidebar-section">
+        <div class="t-section-header"><div class="t-section-label">Notes</div></div>
+        <div class="t-sidebar-copy">
+          <div>The gap view is binary at map level. Tooltips distinguish fast, contingent, and slow channels and show the review date for each country.</div>
+          <div>Presence of finance does not imply equal disbursement capacity. Instruments differ in speed and conditions of access.</div>
+        </div>
+      </div>
+
+    </div>
+
+  </aside>
+
+</div>
+
+<div class="t-feedback">
+  <span>Know of an instrument not included or a coverage error?</span>
+  <a href="mailto:info@fiscalhydraulics.com?subject=Fiscal%20Hydraulics%20Monitor%20note">Share a note</a>
+</div>
+
+<div id="map-tooltip">
+  <div class="tt-country" id="tt-country"></div>
+  <div class="tt-instruments" id="tt-instruments"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
+<script>
+(function() {
+
+  // ===DATA_START===
+  var VINTAGE = 'Last reviewed Q1 2026';
+
+  // Crisis finance instruments — ISO 3166-1 numeric country codes
+  // CCRIF: Caribbean Catastrophe Risk Insurance Facility participants
+  var ccrif   = new Set([660,28,44,52,84,60,92,136,212,308,332,388,500,659,662,534,670,780,796,320,340,558,591]);
+  // ARC: African Risk Capacity — shown only where current policy-year evidence identified
+  var arc     = new Set([450,454,508,426,706,716]);
+  // PCRIC: Pacific Catastrophe Risk Insurance Company — current coverage only
+  var pcric   = new Set([184,242,570,882,776,548]);
+  // Catastrophe bonds currently in force
+  var catbond = new Set([484,152]);
+  // SEADRIF: Southeast Asia Disaster Risk Insurance Facility — active policy
+  var seadrif = new Set([418]);
+  // World Bank Cat DDO — contingent credit lines (require disaster declaration to draw)
+  var catddo  = new Set([52,212,308,388,504,662,670,608,776,548]);
+
+  // Active events without any pre-arranged instrument (flags country red)
+  var activeNoInstrument = new Set();
+
+  // Climate finance — Green Climate Fund, active or approved projects
+  var gcf = new Set([
+    12,204,24,72,108,132,120,140,148,174,178,384,262,270,288,324,404,430,450,454,
+    466,478,508,562,566,646,686,694,729,834,768,800,894,716,706,788,504,818,
+    28,84,192,214,388,332,659,662,670,780,320,340,558,591,
+    242,296,548,882,776,584,520,90,50,116,104,586,144,418,496,524,
+    68,218,604,328,222,174,626
+  ]);
+  // Climate finance — Adaptation Fund, active or approved projects
+  var af = new Set([
+    12,204,72,108,132,120,140,148,174,178,384,270,288,324,404,430,450,454,
+    466,478,508,562,646,686,694,834,768,800,894,716,706,788,
+    28,192,214,388,332,659,662,670,780,84,
+    242,548,882,776,50,104,524,144,68,218,32,604
+  ]);
+  // Climate finance — Global Environment Facility, active or approved projects
+  var gef = new Set([
+    12,204,24,72,108,132,120,140,148,174,178,384,262,270,288,324,404,426,430,
+    450,454,466,478,508,562,566,646,686,694,729,834,768,800,894,716,706,788,504,818,
+    28,84,192,214,388,332,659,662,670,780,320,340,558,591,
+    242,296,548,882,776,584,520,90,50,116,104,586,144,418,496,524,356,360,608,764,704,
+    68,218,604,328,76,32,170,858,600,862,222,630
+  ]);
+
+  // Corrections — remove where evidence does not support inclusion
+  [558,591,388,670,659].forEach(function(id){ gcf.delete(id); });
+  [591,52,212,662,308,320,340,44,670,780,508,450,706].forEach(function(id){ af.delete(id); });
+  af.delete(388);
+  gcf.delete(426);
+
+  // Provisional: membership identified but current access not confirmed within 18 months
+  var provisional = new Set([450,454,508,426,706,716,504]);
+
+  // Instrument detail strings shown in tooltips
+  var instrumentDetail = {
+    388: '2024 World Bank cat bond fully triggered Nov 2025',
+    418: 'Multi-peril policy — payout disbursed Sep 2025 within 6 days',
+    484: 'Multi-peril sovereign cover',
+    152: 'Earthquake and wind cover',
+    504: 'Cat DDO approved 2019, additional financing 2021 · Active contingent line',
+    608: 'Cat bond matured 2022, not renewed · New instruments in development with Global Shield',
+    426: 'Drought payout reported for 2024/25 season',
+    450: 'Sovereign flood cover identified',
+    454: 'Drought payout reported for 2024/25 season',
+    508: 'Payout reported for drought and cyclone support',
+    706: 'Sovereign drought coverage identified',
+    716: 'Drought payout reported in 2024',
+    776: 'Cat DDO $20m approved Jan 2024 · PCRIC parametric member',
+    548: 'Cat DDO $10m approved Jan 2025 · PCRIC parametric member'
+  };
+  // ===DATA_END===
+
+  var currentMode = 'crisis';
+  var worldCache = null;
+
+  var countryNames = {
+    12:'Algeria',24:'Angola',28:'Antigua & Barbuda',32:'Argentina',44:'Bahamas',
+    50:'Bangladesh',52:'Barbados',68:'Bolivia',72:'Botswana',76:'Brazil',
+    84:'Belize',90:'Solomon Islands',92:'British Virgin Islands',104:'Myanmar',
+    108:'Burundi',116:'Cambodia',120:'Cameroon',132:'Cabo Verde',136:'Cayman Islands',
+    140:'Central African Republic',144:'Sri Lanka',148:'Chad',152:'Chile',
+    170:'Colombia',174:'Comoros',178:'Republic of Congo',184:'Cook Islands',
+    192:'Cuba',204:'Benin',212:'Dominica',214:'Dominican Republic',218:'Ecuador',
+    222:'El Salvador',242:'Fiji',262:'Djibouti',270:'Gambia',288:'Ghana',
+    296:'Kiribati',308:'Grenada',320:'Guatemala',324:'Guinea',328:'Guyana',
+    332:'Haiti',340:'Honduras',356:'India',360:'Indonesia',384:"Côte d'Ivoire",
+    388:'Jamaica',404:'Kenya',418:'Lao PDR',426:'Lesotho',430:'Liberia',
+    450:'Madagascar',454:'Malawi',466:'Mali',478:'Mauritania',484:'Mexico',
+    496:'Mongolia',500:'Montserrat',504:'Morocco',508:'Mozambique',520:'Nauru',
+    524:'Nepal',534:'Sint Maarten',548:'Vanuatu',558:'Nicaragua',562:'Niger',
+    566:'Nigeria',570:'Niue',584:'Marshall Islands',586:'Pakistan',591:'Panama',
+    600:'Paraguay',604:'Peru',608:'Philippines',624:'Guinea-Bissau',626:'Timor-Leste',
+    646:'Rwanda',659:'St Kitts & Nevis',660:'Anguilla',662:'Saint Lucia',
+    670:'St Vincent & Grenadines',678:'Sao Tome & Principe',686:'Senegal',
+    694:'Sierra Leone',704:'Vietnam',706:'Somalia',716:'Zimbabwe',729:'Sudan',
+    768:'Togo',776:'Tonga',780:'Trinidad & Tobago',788:'Tunisia',
+    796:'Turks & Caicos',800:'Uganda',818:'Egypt',834:'Tanzania',
+    854:'Burkina Faso',858:'Uruguay',862:'Venezuela',882:'Samoa',894:'Zambia'
+  };
+
+  var regions = {
+    africa:       { scale: 420, center: [20,   5], zoom: 0.96, offsetY: 0 },
+    caribbean:    { scale: 680, center: [-72, 18], zoom: 0.88, offsetY: -4 },
+    southamerica: { scale: 420, center: [-60,-20], zoom: 0.95, offsetY: 2 },
+    pacific:      { scale: 380, center: [130,  0], zoom: 0.90, offsetY: 0 },
+    global:       { scale: 220, center: [20,  10], zoom: 0.98, offsetY: 0 }
+  };
+
+  var crisisMeta = {
+    ccrif:   { label:'CCRIF',    speed:'Fast',       cls:'fast' },
+    arc:     { label:'ARC',      speed:'Fast',       cls:'fast' },
+    pcric:   { label:'PCRIC',    speed:'Fast',       cls:'fast' },
+    catbond: { label:'Cat bond', speed:'Fast',       cls:'fast' },
+    seadrif: { label:'SEADRIF',  speed:'Fast',       cls:'fast' },
+    catddo:  { label:'Cat DDO',  speed:'Contingent', cls:'contingent' }
+  };
+
+  var crisisSets = {
+    ccrif: ccrif, arc: arc, pcric: pcric,
+    catbond: catbond, seadrif: seadrif, catddo: catddo
+  };
+
+  function getClimateProfile(id) {
+    var f = [];
+    if (gcf.has(id)) f.push('GCF');
+    if (af.has(id))  f.push('Adaptation Fund');
+    if (gef.has(id)) f.push('GEF');
+    var n = f.length;
+    if (n === 0) return { className:'country', facilities:[] };
+    if (n === 3) return { className:'country cf-multi-all', facilities:f };
+    if (gcf.has(id) && af.has(id))  return { className:'country cf-multi-gcf-af',  facilities:f };
+    if (gcf.has(id) && gef.has(id)) return { className:'country cf-multi-gcf-gef', facilities:f };
+    if (af.has(id)  && gef.has(id)) return { className:'country cf-multi-af-gef',  facilities:f };
+    if (gcf.has(id)) return { className:'country cf-gcf', facilities:f };
+    if (af.has(id))  return { className:'country cf-af',  facilities:f };
+    return { className:'country cf-gef', facilities:f };
+  }
+
+  function getCountryClass(id) {
+    id = +id;
+    if (currentMode === 'crisis') {
+      var par = ccrif.has(id)||arc.has(id)||pcric.has(id)||catbond.has(id)||seadrif.has(id);
+      var sfx = (catddo.has(id) && par) ? ' has-depth' : '';
+      if (activeNoInstrument.has(id)) return 'country active-event';
+      if (ccrif.has(id))   return 'country has-ccrif'+sfx;
+      if (arc.has(id))     return 'country has-arc'+sfx;
+      if (pcric.has(id))   return 'country has-pcric'+sfx;
+      if (catbond.has(id)) return 'country has-catbond'+sfx;
+      if (seadrif.has(id)) return 'country has-seadrif'+sfx;
+      if (catddo.has(id))  return 'country has-catddo';
+      return 'country';
+    }
+    if (currentMode === 'gap') {
+      var hc = ccrif.has(id)||arc.has(id)||pcric.has(id)||catbond.has(id)||seadrif.has(id)||catddo.has(id);
+      var hk = gcf.has(id)||af.has(id)||gef.has(id);
+      if (hc && hk)  return 'country gap-both';
+      if (hk && !hc) return 'country gap-cf-only';
+      if (hc && !hk) return 'country gap-crisis-only';
+      return 'country';
+    }
+    return getClimateProfile(id).className;
+  }
+
+  function stag(label, cls) {
+    return '<span class="tt-speed tt-speed-'+cls+'">'+label+'</span>';
+  }
+
+  function getTooltipLines(id) {
+    id = +id;
+    if (currentMode === 'crisis') {
+      var instruments = [];
+      Object.keys(crisisSets).forEach(function(k) {
+        if (crisisSets[k].has(id)) instruments.push(crisisMeta[k]);
+      });
+      if (!instruments.length && !activeNoInstrument.has(id)) return null;
+      var lines = instruments.map(function(m){ return m.label + stag(m.speed, m.cls); });
+      if (instrumentDetail[id]) lines.push(instrumentDetail[id]);
+      if (activeNoInstrument.has(id)) lines.push('Active event — no instrument identified');
+      if (provisional.has(id)) lines.push('<span class="tt-muted">Access not confirmed within 18 months</span>');
+      lines.push('<span class="tt-muted">'+VINTAGE+'</span>');
+      return lines;
+    }
+    if (currentMode === 'climate') {
+      var p = getClimateProfile(id);
+      if (!p.facilities.length) return null;
+      return [p.facilities.join(' · ')+stag('Slow','slow'), '<span class="tt-muted">'+VINTAGE+'</span>'];
+    }
+    if (currentMode === 'gap') {
+      var hc = ccrif.has(id)||arc.has(id)||pcric.has(id)||catbond.has(id)||seadrif.has(id)||catddo.has(id);
+      var hk = gcf.has(id)||af.has(id)||gef.has(id);
+      if (!hc && !hk) return null;
+      var lines = [];
+      if (hc) {
+        var ci = [];
+        if (ccrif.has(id))   ci.push('CCRIF');
+        if (arc.has(id))     ci.push('ARC');
+        if (pcric.has(id))   ci.push('PCRIC');
+        if (catbond.has(id)) ci.push('Cat bond');
+        if (seadrif.has(id)) ci.push('SEADRIF');
+        if (catddo.has(id))  ci.push('Cat DDO');
+        lines.push(ci.join(' · ')+stag('Fast / contingent','fast'));
+      }
+      if (hk) lines.push(getClimateProfile(id).facilities.join(' · ')+stag('Slow','slow'));
+      lines.push('<span class="tt-muted">'+VINTAGE+'</span>');
+      return lines;
+    }
+    return null;
+  }
+
+  function updateCounts() {
+    var c = { ccrif:ccrif.size, arc:arc.size, pcric:pcric.size, catbond:catbond.size, catddo:catddo.size, seadrif:seadrif.size };
+    var mc = Math.max.apply(null, Object.keys(c).map(function(k){ return c[k]; }));
+    Object.keys(c).forEach(function(k) {
+      var el = document.getElementById('count-'+k), bar = document.getElementById('bar-'+k);
+      if (el) el.textContent = c[k];
+      if (bar) bar.style.width = (mc ? Math.round(c[k]/mc*100) : 0)+'%';
+    });
+    var cl = { gcf:gcf.size, af:af.size, gef:gef.size };
+    var mcl = Math.max.apply(null, Object.keys(cl).map(function(k){ return cl[k]; }));
+    Object.keys(cl).forEach(function(k) {
+      var el = document.getElementById('count-'+k), bar = document.getElementById('bar-'+k);
+      if (el) el.textContent = cl[k];
+      if (bar) bar.style.width = (mcl ? Math.round(cl[k]/mcl*100) : 0)+'%';
+    });
+  }
+
+  var svg = d3.select('#world-map');
+  var tooltip = document.getElementById('map-tooltip');
+  var ttCountry = document.getElementById('tt-country');
+  var ttInstruments = document.getElementById('tt-instruments');
+
+  var bgRect  = svg.append('rect').attr('fill','#FAFAFA');
+  var defs    = svg.append('defs');
+
+  function addHatch(id, c1, c2) {
+    var p = defs.append('pattern').attr('id',id).attr('patternUnits','userSpaceOnUse').attr('width',6).attr('height',6).attr('patternTransform','rotate(45 0 0)');
+    p.append('rect').attr('width',6).attr('height',6).attr('fill',c1);
+    p.append('line').attr('x1',0).attr('y1',0).attr('x2',0).attr('y2',6).attr('stroke',c2).attr('stroke-width',3);
+  }
+
+  function addTripleHatch(id, c1, c2, c3) {
+    var p = defs.append('pattern').attr('id',id).attr('patternUnits','userSpaceOnUse').attr('width',10).attr('height',10);
+    p.append('rect').attr('width',10).attr('height',10).attr('fill',c1);
+    p.append('path').attr('d','M-2,2 l4,-4 M0,10 l10,-10 M8,12 l4,-4').attr('stroke',c2).attr('stroke-width',2);
+    p.append('path').attr('d','M2,-2 l4,4 M0,0 l10,10 M-2,8 l4,4').attr('stroke',c3).attr('stroke-width',2);
+  }
+
+  addHatch('hatch-gcf-af',  '#3a7ebf','#5aaa7a');
+  addHatch('hatch-gcf-gef', '#3a7ebf','#9a6abf');
+  addHatch('hatch-af-gef',  '#5aaa7a','#9a6abf');
+  addTripleHatch('hatch-all','#3a7ebf','#5aaa7a','#9a6abf');
+
+  var gratPath   = svg.append('path').attr('fill','none').attr('stroke','rgba(0,0,0,0.06)').attr('stroke-width',0.4);
+  var countryGrp = svg.append('g');
+  var markerGrp  = svg.append('g');
+
+  function render(regionKey, worldData) {
+    var svgEl = document.getElementById('world-map');
+    var rect  = svgEl.getBoundingClientRect();
+
+    var W = rect.width  > 10 ? rect.width  : (svgEl.parentElement.clientWidth  || 960);
+    var H = rect.height > 10 ? rect.height : (svgEl.parentElement.clientHeight || 500);
+
+    svgEl.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+    svgEl.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+
+    bgRect.attr('width', W).attr('height', H);
+
+    var r = regions[regionKey];
+
+    var topInset = 78;
+    var bottomInset = 14;
+    var sideInset = 18;
+
+    var availableW = Math.max(100, W - sideInset * 2);
+    var availableH = Math.max(100, H - topInset - bottomInset);
+
+    var baseW = 960;
+    var baseH = 500;
+    var viewportFactor = Math.min(availableW / baseW, availableH / baseH);
+
+    var proj = d3.geoNaturalEarth1()
+      .scale(r.scale * viewportFactor * r.zoom)
+      .center(r.center)
+      .translate([
+        W / 2,
+        topInset + (availableH / 2) + r.offsetY
+      ]);
+
+    var pg = d3.geoPath().projection(proj);
+
+    gratPath.attr('d', pg(d3.geoGraticule()()));
+    countryGrp.selectAll('.country').remove();
+    markerGrp.selectAll('*').remove();
+
+    countryGrp.selectAll('.country')
+      .data(topojson.feature(worldData, worldData.objects.countries).features, function(d){ return d.id; })
+      .enter().append('path')
+      .attr('class', function(d){ return getCountryClass(d.id); })
+      .attr('d', pg)
+      .attr('opacity', 0)
+      .on('mousemove', function(event, d) {
+        var id = +d.id;
+        var name = countryNames[id];
+        var lines = getTooltipLines(id);
+        if (!name || !lines) { tooltip.style.opacity = '0'; return; }
+        ttCountry.textContent = name;
+        ttInstruments.innerHTML = lines.map(function(l){ return '<div>'+l+'</div>'; }).join('');
+        tooltip.style.opacity = '1';
+        tooltip.style.left = (event.clientX+14)+'px';
+        tooltip.style.top  = (event.clientY-40)+'px';
+      })
+      .on('mouseleave', function(){ tooltip.style.opacity = '0'; })
+      .transition().duration(350).attr('opacity', 1);
+  }
+
+  document.querySelectorAll('.t-mode-btn').forEach(function(b) {
+    b.addEventListener('click', function() {
+      currentMode = this.dataset.mode;
+      document.querySelectorAll('.t-mode-btn').forEach(function(x){ x.classList.toggle('active', x.dataset.mode === currentMode); });
+      document.getElementById('sidebar-crisis').style.display  = currentMode === 'crisis'  ? '' : 'none';
+      document.getElementById('sidebar-climate').style.display = currentMode === 'climate' ? '' : 'none';
+      document.getElementById('sidebar-gap').style.display     = currentMode === 'gap'     ? '' : 'none';
+      if (worldCache) render(document.querySelector('.t-region-tab.active').dataset.region, worldCache);
+    });
+  });
+
+  function switchRegion(key) {
+    document.querySelectorAll('.t-region-tab').forEach(function(b){ b.classList.toggle('active', b.dataset.region === key); });
+    if (worldCache) render(key, worldCache);
+  }
+
+  document.querySelectorAll('.t-region-tab').forEach(function(b){
+    b.addEventListener('click', function(){ switchRegion(b.dataset.region); });
+  });
+
+  updateCounts();
+
+  var resizeTimer;
+  window.addEventListener('resize', function() {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function() {
+      var active = document.querySelector('.t-region-tab.active');
+      if (worldCache && active) render(active.dataset.region, worldCache);
+    }, 150);
+  });
+
+  fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
+    .then(function(r){ return r.json(); })
+    .then(function(world){ worldCache = world; switchRegion('africa'); })
+    .catch(function(err){ console.warn('Map load error:', err); });
+
+})();
+</script>
+
+</body>
+</html>

@@ -429,7 +429,7 @@
         <a href="https://www.fiscalhydraulics.com" class="t-logo">Fiscal Hydraulics <span style="color:var(--teal);font-weight:400;">Monitor</span></a>
         <div class="t-updated-row">
           <div class="t-pulse-dot"></div>
-          <span class="t-pulse">Updated 29 Mar 2026</span>
+          <span class="t-pulse">Updated 10 Apr 2026</span>
         </div>
       </div>
     </div>
@@ -617,7 +617,8 @@
 (function() {
 
   // ===DATA_START===
-  var VINTAGE = 'Last reviewed Q1 2026';
+```javascript
+var VINTAGE = 'Last reviewed 10 Apr 2026';
 
   // Crisis finance instruments — ISO 3166-1 numeric country codes
   // CCRIF: Caribbean Catastrophe Risk Insurance Facility participants
@@ -627,11 +628,9 @@
   // PCRIC: Pacific Catastrophe Risk Insurance Company — current coverage only
   var pcric   = new Set([184,242,570,882,776,548]);
   // Catastrophe bonds currently in force
-  var catbond = new Set([484,152]);
   // SEADRIF: Southeast Asia Disaster Risk Insurance Facility — active policy
-  var seadrif = new Set([418]);
   // World Bank Cat DDO — contingent credit lines (require disaster declaration to draw)
-  var catddo  = new Set([52,212,308,388,504,662,670,608,776,548]);
+  var catddo  = new Set([52,212,308,388,504,662,670,608,776,548,242]);
 
   // Active events without any pre-arranged instrument (flags country red)
   var activeNoInstrument = new Set();
@@ -642,7 +641,8 @@
     466,478,508,562,566,646,686,694,729,834,768,800,894,716,706,788,504,818,
     28,84,192,214,388,332,659,662,670,780,320,340,558,591,
     242,296,548,882,776,584,520,90,50,116,104,586,144,418,496,524,
-    68,218,604,328,222,174,626
+    68,218,604,328,222,174,626,
+    44
   ]);
   // Climate finance — Adaptation Fund, active or approved projects
   var af = new Set([
@@ -661,32 +661,34 @@
   ]);
 
   // Corrections — remove where evidence does not support inclusion
-  [558,591,388,670,659].forEach(function(id){ gcf.delete(id); });
+  [558,591,670,659].forEach(function(id){ gcf.delete(id); });
   [591,52,212,662,308,320,340,44,670,780,508,450,706].forEach(function(id){ af.delete(id); });
   af.delete(388);
   gcf.delete(426);
 
   // Provisional: membership identified but current access not confirmed within 18 months
-  var provisional = new Set([450,454,508,426,706,716,504]);
+  var provisional = new Set([454,508,426,706,716,504]);
 
   // Instrument detail strings shown in tooltips
   var instrumentDetail = {
-    388: '2024 World Bank cat bond fully triggered Nov 2025',
+    388: 'CCRIF TC/XSR policies active · Cat bond fully triggered Nov 2025, $150m paid Dec 2025 (Hurricane Melissa) · Cat DDO active',
     418: 'Multi-peril policy — payout disbursed Sep 2025 within 6 days',
     484: 'Multi-peril sovereign cover',
     152: 'Earthquake and wind cover',
     504: 'Cat DDO approved 2019, additional financing 2021 · Active contingent line',
     608: 'Cat bond matured 2022, not renewed · New instruments in development with Global Shield',
     426: 'Drought payout reported for 2024/25 season',
-    450: 'Sovereign flood cover identified',
+    450: 'Sovereign flood cover signed Jan 2026 (first ARC flood policy in Africa) · Cyclone/drought payouts totalling $25m disbursed',
     454: 'Drought payout reported for 2024/25 season',
-    508: 'Payout reported for drought and cyclone support',
+    508: 'ARC payout $5.4m for drought and Cyclone Chido Oct 2025',
     706: 'Sovereign drought coverage identified',
     716: 'Drought payout reported in 2024',
     776: 'Cat DDO $20m approved Jan 2024 · PCRIC parametric member',
-    548: 'Cat DDO $10m approved Jan 2025 · PCRIC parametric member'
+    548: 'Cat DDO $10m approved Jan 2025 · PCRIC parametric member',
+    242: 'Cat DDO $95m approved Jun 2024, disbursed · PCRIC member · Host Country Agreement with PCRIC signed 2026'
   };
-  // ===DATA_END===
+```
+// ===DATA_END===
 
   var currentMode = 'crisis';
   var worldCache = null;

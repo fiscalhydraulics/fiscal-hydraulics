@@ -617,7 +617,6 @@
 (function() {
 
   // ===DATA_START===
-```javascript
 var VINTAGE = 'Last reviewed 10 Apr 2026';
 
   // Crisis finance instruments — ISO 3166-1 numeric country codes
@@ -628,7 +627,9 @@ var VINTAGE = 'Last reviewed 10 Apr 2026';
   // PCRIC: Pacific Catastrophe Risk Insurance Company — current coverage only
   var pcric   = new Set([184,242,570,882,776,548]);
   // Catastrophe bonds currently in force
+  var catbond = new Set([484,152]);
   // SEADRIF: Southeast Asia Disaster Risk Insurance Facility — active policy
+  var seadrif = new Set([418]);
   // World Bank Cat DDO — contingent credit lines (require disaster declaration to draw)
   var catddo  = new Set([52,212,308,388,504,662,670,608,776,548,242]);
 
@@ -687,7 +688,6 @@ var VINTAGE = 'Last reviewed 10 Apr 2026';
     548: 'Cat DDO $10m approved Jan 2025 · PCRIC parametric member',
     242: 'Cat DDO $95m approved Jun 2024, disbursed · PCRIC member · Host Country Agreement with PCRIC signed 2026'
   };
-```
 // ===DATA_END===
 
   var currentMode = 'crisis';

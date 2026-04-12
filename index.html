@@ -514,7 +514,7 @@
         <div class="t-section-header"><div class="t-section-label">Notes</div></div>
         <div class="t-sidebar-copy">
           <div>Shows publicly verifiable current access to six pre-arranged crisis finance instruments: CCRIF, ARC, PCRIC, catastrophe bonds, Cat DDOs, and SEADRIF.</div>
-          <div>Membership alone is not treated as coverage: ARC and PCRIC are shown only where current policy-year or confirmed current enrolment evidence is identified.</div>
+          <div>Membership alone is not treated as coverage: ARC is shown where current policy-year evidence or a consistent pattern of multi-season participation is identified. PCRIC is shown only where current confirmed enrolment evidence is identified. Current-season status for ARC is not publicly confirmed annually.</div>
           <div>Instruments differ in speed. Parametric cover disburses on trigger. Cat DDOs require a disaster declaration and government request before drawdown.</div>
         </div>
       </div>
@@ -622,8 +622,8 @@ var VINTAGE = 'Last reviewed 10 Apr 2026';
   // Crisis finance instruments — ISO 3166-1 numeric country codes
   // CCRIF: Caribbean Catastrophe Risk Insurance Facility participants
   var ccrif   = new Set([660,28,44,52,84,60,92,136,212,308,332,388,500,659,662,534,670,780,796,320,340,558,591]);
-  // ARC: African Risk Capacity — shown only where current policy-year evidence identified
-  var arc     = new Set([450,454,508,426,706,716]);
+  // ARC: African Risk Capacity — shown where current policy-year evidence or consistent multi-season participation identified
+  var arc = new Set([450,454,508,426,706,716,686,466,384,562,478,768,270,894]);
   // PCRIC: Pacific Catastrophe Risk Insurance Company — current coverage only
   var pcric   = new Set([184,242,570,882,776,548]);
   // Catastrophe bonds currently in force
@@ -687,6 +687,14 @@ var VINTAGE = 'Last reviewed 10 Apr 2026';
     776: 'Cat DDO $20m approved Jan 2024 · PCRIC parametric member',
     548: 'Cat DDO $10m approved Jan 2025 · PCRIC parametric member',
     242: 'Cat DDO $95m approved Jun 2024, disbursed · PCRIC member · Host Country Agreement with PCRIC signed 2026'
+    686: 'ARC — multiple seasons of active drought policy and payout history including 2019/20 season · Current-season status not publicly confirmed annually',
+    466: 'ARC — multiple seasons of active drought policy including 2021/22 pool · Payout history confirmed · Current-season status not publicly confirmed annually',
+    384: 'ARC — active drought policy in multiple pools including 2021/22 · Payout confirmed 2020/21 season · Current-season status not publicly confirmed annually',
+    562: 'ARC — active drought policy across multiple pools including 2021/22 · Payout history confirmed · Current-season status not publicly confirmed annually',
+    478: 'ARC — active drought policy since Pool I (2014/15) · Payout history confirmed · Current-season status not publicly confirmed annually',
+    768: 'ARC — active drought policy in 2021/22 pool · Current-season status not publicly confirmed annually',
+    270: 'ARC — active drought policy across multiple pools including 2021/22 · Current-season status not publicly confirmed annually',
+    894: 'ARC — active drought policy in 2021/22 pool · Current-season status not publicly confirmed annually',
   };
 // ===DATA_END===
 

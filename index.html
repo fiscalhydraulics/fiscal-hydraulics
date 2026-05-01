@@ -625,8 +625,9 @@ var VINTAGE = 'Last reviewed 1 May 2026';
   // ARC: African Risk Capacity — shown where current policy-year evidence or consistent multi-season participation identified
   var arc = new Set([450,454,508,426,706,716,686,466,384,562,478,768,270,894]);
   // PCRIC: Pacific Catastrophe Risk Insurance Company — current coverage only
-  var pcric   = new Set([184,242,570,882,776,548,583]);
+  var pcric   = new Set([184,242,570,882,776,548,583,90]);
   // Catastrophe bonds currently in force
+  var catbond = new Set([484,152]);
   // SEADRIF: Southeast Asia Disaster Risk Insurance Facility — active policy
   var seadrif = new Set([418]);
   // World Bank Cat DDO — contingent credit lines (require disaster declaration to draw)
@@ -650,7 +651,7 @@ var VINTAGE = 'Last reviewed 1 May 2026';
     466,478,508,562,646,686,694,834,768,800,894,716,706,788,
     28,192,214,388,332,659,662,670,780,84,
     242,548,882,776,50,104,524,144,68,218,32,604,
-    24,516
+    24,516,748
   ]);
   // Climate finance — Global Environment Facility, active or approved projects
   var gef = new Set([
@@ -672,14 +673,14 @@ var VINTAGE = 'Last reviewed 1 May 2026';
 
   // Instrument detail strings shown in tooltips
   var instrumentDetail = {
-    388: 'CCRIF TC/XSR policies active · Record CCRIF payout $91.9m (TC $70.8m + XSR $21.1m) Dec 2025 following Hurricane Melissa · Cat bond $150m fully triggered Nov 2025, paid Dec 2025, bond redeemed · Cat DDO active · GCF ADAPT Jamaica project approved Mar 2026',
+    388: 'CCRIF TC/XSR policies active · Cat bond 2024 fully triggered Dec 2025 ($150m paid) · New IBRD CAR Jamaica 2026 bond ($150m, four hurricane seasons, maturity May 2030) currently being marketed · Cat DDO active',
     418: 'Multi-peril policy — total payouts US$6.5m including $2m payout Sep 2025 · New 2-year policy signed May 2025 providing up to $16m coverage',
     484: 'Multi-peril sovereign cover',
     152: 'Earthquake and wind cover',
     504: 'Cat DDO approved 2019, additional financing 2021 · Active contingent line',
     608: 'Cat bond matured 2022, not renewed · New instruments in development with Global Shield',
     426: 'Drought payout reported for 2024/25 season',
-    450: 'Sovereign flood cover signed Jan 2026 (first ARC flood policy in Africa) · Cyclone/drought payouts totalling $25m disbursed since 2019',
+    450: 'First ARC sovereign parametric flood policy signed Jan 2026 · Cyclone/drought payouts totalling $25m disbursed historically · ARC member',
     454: 'Drought payout $3.37m received Jul 2025 for 2024/25 season · REPAIR Program payout Jan 2026 · AF project $20m approved Apr 2026',
     508: 'ARC combined payout $5.4m for drought and Cyclone Chido Oct 2025 · REPAIR Program payout Jan 2026',
     706: 'Sovereign drought coverage identified',
@@ -695,9 +696,11 @@ var VINTAGE = 'Last reviewed 1 May 2026';
     478: 'ARC — active drought policy since Pool I (2014/15) · Payout history confirmed · Current-season status not publicly confirmed annually',
     768: 'ARC — active drought policy in 2021/22 pool · Current-season status not publicly confirmed annually',
     270: 'ARC — active drought policy across multiple pools including 2021/22 · Current-season status not publicly confirmed annually',
-    894: 'ARC — active drought policy in 2021/22 pool · Current-season status not publicly confirmed annually',
+    894: 'ARC — active drought policy in 2021/22 pool · Current-season status not publicly confirmed annually · AF single-country project $12.65m approved at B.46 meeting',
     24: 'AF Kunene River Basin regional project with Namibia $24.55m approved Apr 2026',
-    516: 'AF Kunene River Basin regional project with Angola $24.55m approved Apr 2026'
+    516: 'AF Kunene River Basin regional project with Angola $24.55m approved Apr 2026',
+    90: 'PCRIC parametric member · Payout $500k Apr 2026 following Cyclone Maila'
+    748: 'Adaptation Fund regional LLA project approved at B.46 meeting ($30m for Eswatini, Zambia, Zimbabwe)',
   };
 // ===DATA_END===
 
@@ -719,11 +722,11 @@ var VINTAGE = 'Last reviewed 1 May 2026';
     450:'Madagascar',454:'Malawi',466:'Mali',478:'Mauritania',484:'Mexico',
     496:'Mongolia',500:'Montserrat',504:'Morocco',508:'Mozambique',520:'Nauru',
     524:'Nepal',534:'Sint Maarten',548:'Vanuatu',558:'Nicaragua',562:'Niger',
-    566:'Nigeria',570:'Niue',584:'Marshall Islands',586:'Pakistan',591:'Panama',
+    566:'Nigeria',570:'Niue',583:'Micronesia (Fed. States)', 584:'Marshall Islands',586:'Pakistan',591:'Panama',
     600:'Paraguay',604:'Peru',608:'Philippines',624:'Guinea-Bissau',626:'Timor-Leste',
     646:'Rwanda',659:'St Kitts & Nevis',660:'Anguilla',662:'Saint Lucia',
     670:'St Vincent & Grenadines',678:'Sao Tome & Principe',686:'Senegal',
-    694:'Sierra Leone',704:'Vietnam',706:'Somalia',716:'Zimbabwe',729:'Sudan',
+    694:'Sierra Leone',704:'Vietnam',706:'Somalia',716:'Zimbabwe',729:'Sudan',748: 'Eswatini',
     768:'Togo',776:'Tonga',780:'Trinidad & Tobago',788:'Tunisia',
     796:'Turks & Caicos',800:'Uganda',818:'Egypt',834:'Tanzania',
     854:'Burkina Faso',858:'Uruguay',862:'Venezuela',882:'Samoa',894:'Zambia'

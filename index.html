@@ -297,7 +297,7 @@
   .country.has-pcric   { fill: #8a6abf; }
   .country.has-catbond { fill: #4a8aaa; }
   .country.has-seadrif { fill: #e8a030; }
-  .country.has-catddo  { fill: #7a6abf; }
+  .country.has-catddo  { fill: #5a7abf; }
   .country.active-event { fill: #bf3a3a; }
   .country.has-depth { stroke: rgba(20,20,20,0.65); stroke-width: 1.5; }
 
@@ -429,7 +429,7 @@
         <a href="https://www.fiscalhydraulics.com" class="t-logo">Fiscal Hydraulics <span style="color:var(--teal);font-weight:400;">Monitor</span></a>
         <div class="t-updated-row">
           <div class="t-pulse-dot"></div>
-          <span class="t-pulse">Updated 1 May 2026</span>
+          <span class="t-pulse">Updated 3 May 2026</span>
         </div>
       </div>
     </div>
@@ -479,7 +479,7 @@
           <div class="t-coverage-row"><div class="t-cov-label">ARC</div><div class="t-cov-bar-wrap"><div id="bar-arc" class="t-cov-bar" style="background:#7a9e4a"></div></div><div id="count-arc" class="t-cov-count">—</div></div>
           <div class="t-coverage-row"><div class="t-cov-label">PCRIC</div><div class="t-cov-bar-wrap"><div id="bar-pcric" class="t-cov-bar" style="background:#8a6abf"></div></div><div id="count-pcric" class="t-cov-count">—</div></div>
           <div class="t-coverage-row"><div class="t-cov-label">Cat Bond</div><div class="t-cov-bar-wrap"><div id="bar-catbond" class="t-cov-bar" style="background:#4a8aaa"></div></div><div id="count-catbond" class="t-cov-count">—</div></div>
-          <div class="t-coverage-row"><div class="t-cov-label">Cat DDO</div><div class="t-cov-bar-wrap"><div id="bar-catddo" class="t-cov-bar" style="background:#7a6abf"></div></div><div id="count-catddo" class="t-cov-count">—</div></div>
+          <div class="t-coverage-row"><div class="t-cov-label">Cat DDO</div><div class="t-cov-bar-wrap"><div id="bar-catddo" class="t-cov-bar" style="background:#5a7abf"></div></div><div id="count-catddo" class="t-cov-count">—</div></div>
           <div class="t-coverage-row"><div class="t-cov-label">SEADRIF</div><div class="t-cov-bar-wrap"><div id="bar-seadrif" class="t-cov-bar" style="background:#e8a030"></div></div><div id="count-seadrif" class="t-cov-count">—</div></div>
         </div>
         <div class="t-cov-note">Bars scaled relative to largest count.</div>
@@ -492,7 +492,7 @@
           <div class="t-legend-item"><div class="t-legend-dot" style="background:#7a9e4a"></div>ARC — current coverage identified</div>
           <div class="t-legend-item"><div class="t-legend-dot" style="background:#8a6abf"></div>PCRIC — current coverage identified</div>
           <div class="t-legend-item"><div class="t-legend-dot" style="background:#4a8aaa"></div>Catastrophe bond in force</div>
-          <div class="t-legend-item"><div class="t-legend-dot" style="background:#7a6abf"></div>World Bank Cat DDO</div>
+          <div class="t-legend-item"><div class="t-legend-dot" style="background:#5a7abf"></div>World Bank Cat DDO</div>
           <div class="t-legend-item"><div class="t-legend-dot" style="background:#e8a030"></div>SEADRIF active policy</div>
           <div class="t-legend-item"><div class="t-legend-dot" style="background:transparent;border:1.5px solid rgba(20,20,20,0.65);"></div>+ Cat DDO depth (outlined border)</div>
           <div class="t-legend-item"><div class="t-legend-dot" style="background:#c8d4dc"></div>No instrument identified</div>
@@ -617,7 +617,7 @@
 (function() {
 
   // ===DATA_START===
-var VINTAGE = 'Last reviewed 1 May 2026';
+var VINTAGE = 'Last reviewed 3 May 2026';
 
   // Crisis finance instruments — ISO 3166-1 numeric country codes
   // CCRIF: Caribbean Catastrophe Risk Insurance Facility participants
@@ -627,7 +627,7 @@ var VINTAGE = 'Last reviewed 1 May 2026';
   // PCRIC: Pacific Catastrophe Risk Insurance Company — current coverage only
   var pcric   = new Set([184,242,570,882,776,548,583,90]);
   // Catastrophe bonds currently in force
-  var catbond = new Set([484,152]);
+  var catbond = new Set([484,152,417,762]);
   // SEADRIF: Southeast Asia Disaster Risk Insurance Facility — active policy
   var seadrif = new Set([418]);
   // World Bank Cat DDO — contingent credit lines (require disaster declaration to draw)
@@ -677,7 +677,7 @@ var VINTAGE = 'Last reviewed 1 May 2026';
     418: 'Multi-peril policy — total payouts US$6.5m including $2m payout Sep 2025 · New 2-year policy signed May 2025 providing up to $16m coverage',
     484: 'Multi-peril sovereign cover',
     152: 'Earthquake and wind cover',
-    504: 'Cat DDO approved 2019, additional financing 2021 · Active contingent line',
+    504: 'Cat DDO $275m approved 2019, additional financing 2021 · Activated following September 2023 earthquake · Follow-on World Bank DRF programme building on Cat DDO foundations,
     608: 'Cat DDO $500m approved Nov 2023 · Fully drawn Nov 2025 following Typhoon Kalmaegi · Cat bond matured 2022, not renewed',
     426: 'Drought payout reported for 2024/25 season',
     450: 'First ARC sovereign parametric flood policy signed Jan 2026 · Cyclone/drought payouts totalling $25m disbursed historically · ARC member',
@@ -700,7 +700,9 @@ var VINTAGE = 'Last reviewed 1 May 2026';
     24: 'AF Kunene River Basin regional project with Namibia $24.55m approved Apr 2026',
     516: 'AF Kunene River Basin regional project with Angola $24.55m approved Apr 2026',
     90: 'PCRIC parametric member · Payout $500k Apr 2026 following Cyclone Maila',
-    748: 'Adaptation Fund regional LLA project approved at B.46 meeting ($30m for Eswatini, Zambia, Zimbabwe)'
+    748: 'Adaptation Fund regional LLA project approved at B.46 meeting ($30m for Eswatini, Zambia, Zimbabwe)',
+    417: 'ADB Disaster Relief Bond $80m · Parametric earthquake ($70m) and extreme precipitation ($10m) cover · Issued May 2026, matures April 2029',
+    762: 'ADB Disaster Relief Bond $80m · Parametric earthquake ($70m) and extreme precipitation ($10m) cover · Issued May 2026, matures April 2029'
   };
 // ===DATA_END===
 
@@ -718,7 +720,7 @@ var VINTAGE = 'Last reviewed 1 May 2026';
     222:'El Salvador',242:'Fiji',262:'Djibouti',270:'Gambia',288:'Ghana',
     296:'Kiribati',308:'Grenada',320:'Guatemala',324:'Guinea',328:'Guyana',
     332:'Haiti',340:'Honduras',356:'India',360:'Indonesia',384:"Côte d'Ivoire",
-    388:'Jamaica',404:'Kenya',418:'Lao PDR',426:'Lesotho',430:'Liberia',
+    388:'Jamaica',404:'Kenya',417:'Kyrgyz Republic',418:'Lao PDR',426:'Lesotho',430:'Liberia',
     450:'Madagascar',454:'Malawi',466:'Mali',478:'Mauritania',484:'Mexico',
     496:'Mongolia',500:'Montserrat',504:'Morocco',508:'Mozambique',516:'Namibia',520:'Nauru',
     524:'Nepal',534:'Sint Maarten',548:'Vanuatu',558:'Nicaragua',562:'Niger',
@@ -726,7 +728,7 @@ var VINTAGE = 'Last reviewed 1 May 2026';
     600:'Paraguay',604:'Peru',608:'Philippines',624:'Guinea-Bissau',626:'Timor-Leste',
     646:'Rwanda',659:'St Kitts & Nevis',660:'Anguilla',662:'Saint Lucia',
     670:'St Vincent & Grenadines',678:'Sao Tome & Principe',686:'Senegal',
-    694:'Sierra Leone',704:'Vietnam',706:'Somalia',716:'Zimbabwe',729:'Sudan',748: 'Eswatini',764:'Thailand',
+    694:'Sierra Leone',704:'Vietnam',706:'Somalia',716:'Zimbabwe',729:'Sudan',748: 'Eswatini',762: 'Tajikistan',764:'Thailand',
     768:'Togo',776:'Tonga',780:'Trinidad & Tobago',788:'Tunisia',
     796:'Turks & Caicos',800:'Uganda',818:'Egypt',834:'Tanzania',
     854:'Burkina Faso',858:'Uruguay',862:'Venezuela',882:'Samoa',894:'Zambia'

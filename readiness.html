@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fiscal Hydraulics — Readiness Screen</title>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #3A4245;
+    --ink-light: #505A5D;
+    --teal: #5A938C;
+    --teal-deep: #4a7d77;
+    --teal-light: #EAF3F2;
+    --border: #DDD8D0;
+    --border-teal: #A8C8C4;
+    --bg: #FAFAF8;
+    --white: #FFFFFF;
+    --amber: #B07D3A;
+    --amber-light: #FDF5E8;
+    --red-soft: #C06555;
+    --grey-flag: #8a9498;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Newsreader', Georgia, serif;
+    background: var(--bg);
+    color: var(--ink);
+    padding: 20px;
+  }
+  .rs-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding-bottom: 12px;
+    margin-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .rs-title { font-size: 20px; font-weight: 600; color: var(--ink); }
+  .rs-title span { color: var(--teal); font-weight: 500; }
+  .rs-vintage {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-light);
+    letter-spacing: 0.04em;
+  }
+  .rs-intro {
+    font-size: 14px;
+    color: var(--ink-light);
+    line-height: 1.65;
+    max-width: 72ch;
+    margin-bottom: 16px;
+  }
+  .rs-filters {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .rs-filter {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 12px;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    background: var(--white);
+    color: var(--ink-light);
+    cursor: pointer;
+  }
+  .rs-filter.active {
+    border-color: var(--teal);
+    background: var(--teal-light);
+    color: var(--teal-deep);
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--white);
+    border: 1.5px solid var(--border-teal);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  thead th {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10.5px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--teal-deep);
+    background: var(--teal-light);
+    text-align: left;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border-teal);
+  }
+  tbody td {
+    font-size: 13.5px;
+    padding: 12px 14px;
+    border-bottom: 1px solid rgba(168,200,196,0.35);
+    vertical-align: top;
+    line-height: 1.55;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  .rs-country { font-weight: 600; white-space: nowrap; }
+  .rs-signal {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    padding: 3px 9px;
+    border-radius: 3px;
+    white-space: nowrap;
+    display: inline-block;
+  }
+  .sig-stronger { background: var(--teal-light); color: var(--teal-deep); border: 1px solid var(--border-teal); }
+  .sig-mixed    { background: var(--amber-light); color: var(--amber); border: 1px solid #e8d5b5; }
+  .sig-emerging { background: #F9EDEA; color: var(--red-soft); border: 1px solid #e5c5bd; }
+  .sig-unclear  { background: #F2F2F0; color: var(--grey-flag); border: 1px solid var(--border); }
+  .rs-conf {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-light);
+    white-space: nowrap;
+  }
+  .rs-rationale { color: var(--ink-light); max-width: 52ch; }
+  .rs-footer {
+    margin-top: 12px;
+    font-size: 12.5px;
+    color: var(--ink-light);
+    line-height: 1.6;
+  }
+  .rs-footer a {
+    color: var(--teal-deep);
+    text-decoration: none;
+    border-bottom: 1px solid var(--border-teal);
+  }
+  @media (max-width: 700px) {
+    body { padding: 12px; }
+    thead { display: none; }
+    tbody td { display: block; border-bottom: none; padding: 4px 14px; }
+    tbody tr { display: block; border-bottom: 1px solid var(--border-teal); padding: 10px 0; }
+    .rs-rationale { max-width: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="rs-header">
+  <div class="rs-title">Readiness Screen <span>· evidence-based flow signals</span></div>
+  <div class="rs-vintage" id="rs-vintage"></div>
+</div>
+
+<p class="rs-intro">A public-evidence screen of whether crisis finance can move — from authority, through instruments, to people. Each country is scored across execution, financing channels, and distribution using the Fiscal Hydraulics rubric. The signal shown is the overall pattern; the bottleneck is the weakest domain. Full domain worksheets, evidence registers, and rescore triggers are available on request.</p>
+
+<div class="rs-filters" id="rs-filters">
+  <button class="rs-filter active" data-filter="all">All</button>
+  <button class="rs-filter" data-filter="Stronger">Stronger</button>
+  <button class="rs-filter" data-filter="Mixed">Mixed</button>
+  <button class="rs-filter" data-filter="Emerging">Emerging</button>
+  <button class="rs-filter" data-filter="Unclear">Unclear</button>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Country</th>
+      <th>Signal</th>
+      <th>Likely bottleneck</th>
+      <th>Confidence</th>
+      <th>Rationale</th>
+    </tr>
+  </thead>
+  <tbody id="rs-body"></tbody>
+</table>
+
+<div class="rs-footer">
+  Screens use publicly available evidence only and are reviewed manually before publication. Signal vocabulary: Stronger · Mixed · Emerging · Unclear. An Unclear signal reflects insufficient public evidence, not assessed weakness. <a href="mailto:info@fiscalhydraulics.com?subject=Readiness%20Screen%20enquiry">Request a full country worksheet</a>
+</div>
+
+<script>
+// ===DATA_START===
+var RS_VINTAGE = 'Last reviewed 1 Jul 2026';
+var screens = [
+  {
+    country: 'Jamaica',
+    iso: 388,
+    signal: 'Stronger',
+    bottleneck: 'Distribution',
+    confidence: 'Medium',
+    rationale: 'Full instrument stack activated and verified in fiscal policy documents. Capital execution constraints and partner-led delivery noted in formal assessments.',
+    reviewed: '2026-04'
+  },
+  {
+    country: 'Niger',
+    iso: 562,
+    signal: 'Mixed',
+    bottleneck: 'Multiple constraints',
+    confidence: 'Medium',
+    rationale: 'Government-owned adaptive safety net with documented crisis use. Commitment-control gaps documented in PEFA 2023; no sovereign risk-transfer instrument confirmed in force.',
+    reviewed: '2026-04'
+  },
+  {
+    country: 'Syria',
+    iso: 760,
+    signal: 'Unclear',
+    bottleneck: 'Multiple constraints',
+    confidence: 'Low',
+    rationale: 'Transitional fiscal apparatus under active reconstruction. No pre-arranged sovereign instrument identified; recent crisis delivery primarily partner-mediated.',
+    reviewed: '2026-04'
+  }
+];
+// ===DATA_END===
+
+document.getElementById('rs-vintage').textContent = RS_VINTAGE;
+
+var body = document.getElementById('rs-body');
+var sigClass = { Stronger: 'sig-stronger', Mixed: 'sig-mixed', Emerging: 'sig-emerging', Unclear: 'sig-unclear' };
+
+function render(filter) {
+  body.innerHTML = '';
+  screens
+    .filter(function(s){ return filter === 'all' || s.signal === filter; })
+    .sort(function(a,b){ return a.country.localeCompare(b.country); })
+    .forEach(function(s) {
+      var tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td class="rs-country">' + s.country + '</td>' +
+        '<td><span class="rs-signal ' + (sigClass[s.signal] || '') + '">' + s.signal + '</span></td>' +
+        '<td>' + s.bottleneck + '</td>' +
+        '<td class="rs-conf">' + s.confidence + '</td>' +
+        '<td class="rs-rationale">' + s.rationale + '</td>';
+      body.appendChild(tr);
+    });
+}
+
+document.getElementById('rs-filters').addEventListener('click', function(e) {
+  if (!e.target.classList.contains('rs-filter')) return;
+  document.querySelectorAll('.rs-filter').forEach(function(b){ b.classList.remove('active'); });
+  e.target.classList.add('active');
+  render(e.target.dataset.filter);
+});
+
+render('all');
+</script>
+
+</body>
+</html>

@@ -464,7 +464,7 @@
         <div class="t-section-label">Financing Fast and Slow</div>
       </div>
       <div class="t-sidebar-copy">
-        <div>Climate finance is slower-moving — it funds adaptation and resilience over time. Crisis finance is automatic — pre-agreed triggers that disburse in days without requiring new political decisions.</div>
+        <div>Climate finance is slower-moving — it funds adaptation and resilience over time. Crisis finance is faster-moving — it includes pre-agreed triggers and contingent instruments designed to release funding after a shock without negotiating a new programme from scratch.</div>
         <div>This monitor maps both layers and the integration between them.</div>
       </div>
     </div>
@@ -676,40 +676,47 @@ var VINTAGE = 'Last reviewed 3 July 2026';
   var provisional = new Set([454,508,426,716,504]);
 
   // Instrument detail strings shown in tooltips
-  var instrumentDetail = {
-    388: 'CCRIF TC/XSR policies active · IBRD CAR Jamaica 2026 bond $200m in force (maturity May 2030) · 2024 bond fully triggered Dec 2025 ($150m paid) · Cat DDO active',
-    418: 'Multi-peril policy — total payouts US$6.5m including $2m payout Sep 2025 · New 2-year policy signed May 2025 providing up to $16m coverage · WFP drought parametric policy also in force from 2026',
-    484: 'Multi-peril sovereign cover',
-    152: 'Earthquake and wind cover',
-    504: 'Cat DDO $275m approved 2019, additional financing 2021 · Activated following September 2023 earthquake · Follow-on World Bank DRF programme building on Cat DDO foundations',
-    608: 'Cat DDO $500m approved Nov 2023 · Fully drawn Nov 2025 following Typhoon Kalmaegi · Cat bond matured 2022, not renewed',
-    426: 'Drought payout reported for 2024/25 season',
-    450: 'ARC sovereign parametric flood policy in force (signed Jan 2026, first in Africa) · Cyclone/drought payouts totalling $25m disbursed historically · ARC member',
-    454: 'Drought payout $3.37m received Jul 2025 for 2024/25 season · REPAIR Program payout Jan 2026 · AF project $20m approved Apr 2026',
-    508: 'ARC combined payout $5.4m for drought and Cyclone Chido Oct 2025 · REPAIR Program payout Jan 2026',
-    706: 'ARC drought policy confirmed active · Payout $5.5m confirmed May 2026 · AF innovation project $5m approved B.46 Apr 2026',
-    716: 'Drought payout reported in 2024 · AF regional LLA project $30m approved at B.46 meeting Apr 2026 (with Eswatini and Zambia)',
-    776: 'Cat DDO $20m approved Jan 2024 · PCRIC parametric member',
-    548: 'Cat DDO $10m approved Jan 2025 · PCRIC parametric member',
-    242: 'Cat DDO $95m approved Jun 2024, disbursed · PCRIC member · Host Country Agreement with PCRIC signed 2026 · Ex gratia payment $540k Apr 2026 following TC Vaianu',
-    583: 'PCRIC parametric member · Payout $375k Apr 2026 following Cyclone Sinlaku',
-    686: 'ARC — multiple seasons of active drought policy and payout history including 2019/20 season · Current-season status not publicly confirmed annually',
-    466: 'ARC — multiple seasons of active drought policy including 2021/22 pool · Payout history confirmed · Current-season status not publicly confirmed annually',
-    384: 'ARC — active drought policy in multiple pools including 2021/22 · Payout confirmed 2020/21 season · Current-season status not publicly confirmed annually',
-    562: 'ARC — active drought policy across multiple pools including 2021/22 · Payout history confirmed · Current-season status not publicly confirmed annually',
-    478: 'ARC — active drought policy since Pool I (2014/15) · Payout history confirmed · Current-season status not publicly confirmed annually',
-    768: 'ARC — active drought policy in 2021/22 pool · Current-season status not publicly confirmed annually',
-    270: 'ARC — active drought policy across multiple pools including 2021/22 · Current-season status not publicly confirmed annually',
-    894: 'ARC — active drought policy in 2021/22 pool · Current-season status not publicly confirmed annually · AF single-country project $12.65m approved at B.46 meeting',
-    24: 'AF Kunene River Basin regional project with Namibia $24.55m approved Apr 2026',
-    516: 'AF Kunene River Basin regional project with Angola $24.55m approved Apr 2026',
-    90: 'PCRIC parametric member · Payout $500k Apr 2026 following Cyclone Maila',
-    748: 'Adaptation Fund regional LLA project approved at B.46 meeting ($30m for Eswatini, Zambia, Zimbabwe)',
-    417: 'ADB Disaster Relief Bond $80m · Parametric earthquake ($70m) and extreme precipitation ($10m) cover · Issued May 2026, matures April 2029',
-    570: 'PCRIC tropical cyclone policy — renewed for 2024/2025 season',
-    340: 'CCRIF excess rainfall policy · Member since June 2023',
-    762: 'ADB Disaster Relief Bond $80m · Parametric earthquake ($70m) and extreme precipitation ($10m) cover · Issued May 2026, matures April 2029'
-  };
+var crisisDetail = {
+  388: 'CCRIF TC/XSR policies active · IBRD CAR Jamaica 2026 bond $200m in force (maturity May 2030) · 2024 bond fully triggered Dec 2025 ($150m paid) · Cat DDO active',
+  418: 'SEADRIF multi-peril policy — total payouts US$6.5m including $2m payout Sep 2025 · New 2-year policy signed May 2025 providing up to $16m coverage · WFP drought parametric policy also in force from 2026',
+  484: 'Multi-peril sovereign cover',
+  152: 'Earthquake and wind cover',
+  504: 'Cat DDO $275m approved 2019, additional financing 2021 · Activated following September 2023 earthquake · Follow-on World Bank DRF programme building on Cat DDO foundations',
+  608: 'Cat DDO $500m approved Nov 2023 · Fully drawn Nov 2025 following Typhoon Kalmaegi · Cat bond matured 2022, not renewed',
+  426: 'Drought payout reported for 2024/25 season',
+  450: 'ARC sovereign parametric flood policy in force, signed Jan 2026 · Cyclone/drought payouts totalling $25m disbursed historically · ARC member',
+  454: 'ARC drought payout $3.37m received Jul 2025 for 2024/25 season · REPAIR Program payout Jan 2026',
+  508: 'ARC combined payout $5.4m for drought and Cyclone Chido Oct 2025 · REPAIR Program payout Jan 2026',
+  706: 'ARC drought policy confirmed active · Payout $5.5m confirmed May 2026',
+  716: 'ARC drought payout reported in 2024',
+  776: 'Cat DDO $20m approved Jan 2024 · PCRIC parametric member',
+  548: 'Cat DDO $10m approved Jan 2025 · PCRIC parametric member',
+  242: 'Cat DDO $95m approved Jun 2024, disbursed · PCRIC member · Host Country Agreement with PCRIC signed 2026 · Ex gratia payment $540k Apr 2026 following TC Vaianu',
+  583: 'PCRIC parametric member · Payout $375k Apr 2026 following Cyclone Sinlaku',
+  686: 'ARC — multiple seasons of active drought policy and payout history including 2019/20 season · Current-season status not publicly confirmed annually',
+  466: 'ARC — multiple seasons of active drought policy including 2021/22 pool · Payout history confirmed · Current-season status not publicly confirmed annually',
+  384: 'ARC — active drought policy in multiple pools including 2021/22 · Payout confirmed 2020/21 season · Current-season status not publicly confirmed annually',
+  562: 'ARC — active drought policy across multiple pools including 2021/22 · Payout history confirmed · Current-season status not publicly confirmed annually',
+  478: 'ARC — active drought policy since Pool I, 2014/15 · Payout history confirmed · Current-season status not publicly confirmed annually',
+  768: 'ARC — active drought policy in 2021/22 pool · Current-season status not publicly confirmed annually',
+  270: 'ARC — active drought policy across multiple pools including 2021/22 · Current-season status not publicly confirmed annually',
+  894: 'ARC — active drought policy in 2021/22 pool · Current-season status not publicly confirmed annually',
+  90: 'PCRIC parametric member · Payout $500k Apr 2026 following Cyclone Maila',
+  417: 'ADB Disaster Relief Bond $80m · Parametric earthquake ($70m) and extreme precipitation ($10m) cover · Issued May 2026, matures April 2029',
+  570: 'PCRIC tropical cyclone policy — renewed for 2024/2025 season',
+  340: 'CCRIF excess rainfall policy · Member since June 2023',
+  762: 'ADB Disaster Relief Bond $80m · Parametric earthquake ($70m) and extreme precipitation ($10m) cover · Issued May 2026, matures April 2029'
+};
+
+var climateDetail = {
+  24: 'Adaptation Fund Kunene River Basin regional project with Namibia $24.55m approved Apr 2026',
+  516: 'Adaptation Fund Kunene River Basin regional project with Angola $24.55m approved Apr 2026',
+  454: 'Adaptation Fund project $20m approved Apr 2026',
+  706: 'Adaptation Fund innovation project $5m approved at B.46, Apr 2026',
+  716: 'Adaptation Fund regional locally led adaptation project $30m approved at B.46, Apr 2026',
+  748: 'Adaptation Fund regional locally led adaptation project approved at B.46 meeting, $30m for Eswatini, Zambia and Zimbabwe',
+  894: 'Adaptation Fund single-country project $12.65m approved at B.46 meeting'
+};
 // ===DATA_END===
 
   var currentMode = 'crisis';
@@ -807,48 +814,65 @@ var VINTAGE = 'Last reviewed 3 July 2026';
     return '<span class="tt-speed tt-speed-'+cls+'">'+label+'</span>';
   }
 
-  function getTooltipLines(id) {
-    id = +id;
-    if (currentMode === 'crisis') {
-      var instruments = [];
-      Object.keys(crisisSets).forEach(function(k) {
-        if (crisisSets[k].has(id)) instruments.push(crisisMeta[k]);
-      });
-      if (!instruments.length && !activeNoInstrument.has(id)) return null;
-      var lines = instruments.map(function(m){ return m.label + stag(m.speed, m.cls); });
-      if (instrumentDetail[id]) lines.push(instrumentDetail[id]);
-      if (activeNoInstrument.has(id)) lines.push('Active event — no instrument identified');
-      if (provisional.has(id)) lines.push('<span class="tt-muted">No recent evidence of active coverage</span>');
-      lines.push('<span class="tt-muted">'+VINTAGE+'</span>');
-      return lines;
-    }
-    if (currentMode === 'climate') {
-      var p = getClimateProfile(id);
-      if (!p.facilities.length) return null;
-      return [p.facilities.join(' · ')+stag('Slow','slow'), '<span class="tt-muted">'+VINTAGE+'</span>'];
-    }
-    if (currentMode === 'gap') {
-      var hc = ccrif.has(id)||arc.has(id)||pcric.has(id)||catbond.has(id)||seadrif.has(id)||catddo.has(id);
-      var hk = gcf.has(id)||af.has(id)||gef.has(id);
-      if (!hc && !hk) return null;
-      var lines = [];
-      if (hc) {
-        var ci = [];
-        if (ccrif.has(id))   ci.push('CCRIF');
-        if (arc.has(id))     ci.push('ARC');
-        if (pcric.has(id))   ci.push('PCRIC');
-        if (catbond.has(id)) ci.push('Cat bond');
-        if (seadrif.has(id)) ci.push('SEADRIF');
-        if (catddo.has(id))  ci.push('Cat DDO');
-        lines.push(ci.join(' · ')+stag('Fast / contingent','fast'));
-      }
-      if (hk) lines.push(getClimateProfile(id).facilities.join(' · ')+stag('Slow','slow'));
-      lines.push('<span class="tt-muted">'+VINTAGE+'</span>');
-      return lines;
-    }
-    return null;
+function getTooltipLines(id) {
+  id = +id;
+  if (currentMode === 'crisis') {
+    var instruments = [];
+    Object.keys(crisisSets).forEach(function(k) {
+      if (crisisSets[k].has(id)) instruments.push(crisisMeta[k]);
+    });
+    if (!instruments.length && !activeNoInstrument.has(id)) return null;
+    var lines = instruments.map(function(m) {
+      return m.label + stag(m.speed, m.cls);
+    });
+    if (crisisDetail[id]) lines.push(crisisDetail[id]);
+    if (activeNoInstrument.has(id)) lines.push('Active event — no instrument identified');
+    if (provisional.has(id)) lines.push('<span class="tt-muted">No recent evidence of active coverage</span>');
+    lines.push('<span class="tt-muted">'+VINTAGE+'</span>');
+    return lines;
+  }
+  if (currentMode === 'climate') {
+    var p = getClimateProfile(id);
+    if (!p.facilities.length) return null;
+    var lines = [
+      p.facilities.join(' · ') + stag('Slow','slow')
+    ];
+    if (climateDetail[id]) lines.push(climateDetail[id]);
+    lines.push('<span class="tt-muted">'+VINTAGE+'</span>');
+    return lines;
   }
 
+  if (currentMode === 'gap') {
+    var hc = ccrif.has(id)||arc.has(id)||pcric.has(id)||catbond.has(id)||seadrif.has(id)||catddo.has(id);
+    var hk = gcf.has(id)||af.has(id)||gef.has(id);
+    if (!hc && !hk) return null;
+    var lines = [];
+    if (hc) {
+      var ci = [];
+      if (ccrif.has(id))   ci.push('CCRIF');
+      if (arc.has(id))     ci.push('ARC');
+      if (pcric.has(id))   ci.push('PCRIC');
+      if (catbond.has(id)) ci.push('Cat bond');
+      if (seadrif.has(id)) ci.push('SEADRIF');
+      if (catddo.has(id))  ci.push('Cat DDO');
+      lines.push(ci.join(' · ') + stag('Fast / contingent','contingent'));
+      if (crisisDetail[id]) {
+        lines.push(crisisDetail[id]);
+      }
+    }
+
+    if (hk) {
+      lines.push(getClimateProfile(id).facilities.join(' · ') + stag('Slow','slow'));
+      if (climateDetail[id]) {
+        lines.push(climateDetail[id]);
+      }
+    }
+
+    lines.push('<span class="tt-muted">'+VINTAGE+'</span>');
+    return lines;
+  }
+  return null;
+}
   function updateCounts() {
     var c = { ccrif:ccrif.size, arc:arc.size, pcric:pcric.size, catbond:catbond.size, catddo:catddo.size, seadrif:seadrif.size };
     var mc = Math.max.apply(null, Object.keys(c).map(function(k){ return c[k]; }));
